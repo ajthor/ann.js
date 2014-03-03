@@ -1,0 +1,32 @@
+{
+  "name": "annjs",
+  "version": "0.0.1",
+  "description": "Javascript Artificial Neural Network framework.",
+  "main": "ann.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "neural",
+    "network",
+    "parse"
+  ],
+  "author": "Adam Thorpe",
+  "license": "MIT",
+  "dependencies": {
+    "lodash": "~2.4.1",
+    "backbone-node": "git://github.com/ajthor/backbone-node.git"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/ajthor/ann.js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ajthor/ann.js/issues"
+  },
+  "homepage": "https://github.com/ajthor/ann.js"
+}
