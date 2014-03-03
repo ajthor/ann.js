@@ -2,8 +2,8 @@ var _ = require("lodash");
 var neuron = require("./static.js").neuron;
 var layer = require("./static.js").layer;
 
-var system = require("./util/training/system.js");
-var backpropSystem = require("./util/training/algorithms/backpropagation.js");
+var system = require("./util/training/training.js").system;
+var backpropSystem = require("./util/training/training.js").backpropagation;
 // Network Class
 // -------------
 var network = module.exports = function(neurons, options) {

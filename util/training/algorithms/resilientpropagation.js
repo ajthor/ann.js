@@ -1,5 +1,5 @@
 var _ = require("lodash");
-var system = require("../system.js");
+var system = require("./system/system.js");
 
 var rprop = module.exports = system.extend({
 
