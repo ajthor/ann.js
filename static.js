@@ -14,6 +14,7 @@ _.extend(layer.prototype, {
 			// Push a result value to an output array.
 			result[i] = this._neurons[i].parse(input);
 		}
+		// Return result array.
 		return result;
 	}
 
@@ -24,18 +25,14 @@ _.extend(layer.prototype, {
 var neuron = exports.neuron = function neuron() {
 	// Weights array.
 	this.weights = [1];
-	// this.bias = Math.floor(Math.random() * (10 - (-10) + 1) + (-10));
-	this.bias = 1;
 
 	// Variables for backpropagation.
 	this.input = [];
 	this.output = 0;
 	this.deltas = [0];
 	this.previousDeltas = [0];
-	this.updates = [0.1];
-	this.previousUpdates = [0.1];
-	this.gradient = [];
-	this.previousGradient = [];
+	this.gradient = 0;
+	this.previousGradient = 0;
 };
 
 _.extend(neuron.prototype, {
@@ -48,12 +45,8 @@ _.extend(neuron.prototype, {
 			// then create a new random weight.
 			if(!this.weights[i+1]) {
 				this.weights[i+1] = (function(min,max) {
-				    return Math.floor(Math.random()*(max-min+1)+min);
+				    return Math.random()*(max-min+1)+min;
 				})(-1, 1);
-				this.updates[i+1] = 0.1; // For rprop.
-				this.previousUpdates[i+1] = 0.1; // For rprop.
-				this.deltas[i+1] = 0.1; // For rprop.
-				this.previousDeltas[i+1] = 0.1; // For rprop.
 			}
 			// Sum up the weights.
 			sum += input[i] * this.weights[i+1];

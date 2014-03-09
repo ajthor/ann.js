@@ -84,7 +84,7 @@ var rprop = module.exports = system.extend({
 						}
 						// Multiply the error 
 						for(k = 0; k < neuron.weights.length; k++) {
-							neuron.gradient[k] = output * (1 - output) * error * neuron.weights[k];
+							neuron.gradient[k] = output * (1 - output) * error;
 						}
 
 					}
@@ -126,7 +126,7 @@ var rprop = module.exports = system.extend({
 						neuron.previousDeltas[k] = neuron.deltas[k];
 						neuron.previousUpdates[k] = neuron.updates[k];
 
-						if((i==0) && (j==0) && (k==0)) console.log(neuron);
+						if((i===0) && (j===0) && (k===0)) console.log(neuron);
 					}
 				}
 			}
