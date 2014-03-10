@@ -10,9 +10,6 @@ var network = module.exports = function(neurons, options) {
 	if(!(this instanceof network)) return new network(neurons, options);
 	// Set default options.
 	this.options = _.defaults((options || {}), {
-		iterations: 5000,
-		learningRate: 0.5,
-		momentum: 0.9,
 		// Set default training system to a backpropagation system.
 		trainingSystem: backpropSystem
 	});

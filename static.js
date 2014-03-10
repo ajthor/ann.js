@@ -29,10 +29,18 @@ var neuron = exports.neuron = function neuron() {
 	// Variables for backpropagation.
 	this.input = [];
 	this.output = 0;
+
+	this.error = 0;
+	this.previousError = 0;
+
 	this.deltas = [0];
 	this.previousDeltas = [0];
-	this.gradient = 0;
-	this.previousGradient = 0;
+
+	this.updates = [0.1];
+	this.previousUpdates = [0.1];
+	
+	this.gradients = [0];
+	this.previousGradients = [0];
 };
 
 _.extend(neuron.prototype, {
@@ -47,6 +55,8 @@ _.extend(neuron.prototype, {
 				this.weights[i+1] = (function(min,max) {
 				    return Math.random()*(max-min+1)+min;
 				})(-1, 1);
+				this.updates[i+1] = 0.1;
+				this.previousUpdates[i+1] = 0.1;
 			}
 			// Sum up the weights.
 			sum += input[i] * this.weights[i+1];
