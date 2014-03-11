@@ -32,11 +32,11 @@ var backpropagation = module.exports = system.extend({
 						neuron.weights[k] += neuron.deltas[k];
 						neuron.weights[k] += this.options.momentum * neuron.previousDeltas[k];
 
-						if((i==0) && (j==0) && (k==1)) console.log(neuron);
+						// if((i==0) && (j==0) && (k==1)) console.log(neuron);
 
 					}
 					// Set previous delta values.
-					neuron.previousDeltas[k] = neuron.deltas[k];
+					neuron.previousDeltas = neuron.deltas.slice();
 
 				}
 			}

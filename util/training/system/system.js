@@ -4,7 +4,7 @@ var extend = require("backbone-node").extend;
 var system = module.exports = function(network, options) {
 	this.network = network;
 	this.options = _.defaults((options || {}), {
-		iterations: 1,
+		iterations: 10000,
 		threshold: 0.001
 	});
 	this.initialize.apply(this, arguments);
@@ -42,7 +42,7 @@ _.extend(system.prototype, {
 
 				sum += this.calculateError(ideals[j]);
 			}
-			// And calculate the error.
+			// And calculate the batch error.
 			error = sum / inputs.length;
 		} // End of an epoch.
 
@@ -72,7 +72,7 @@ _.extend(system.prototype, {
 				neuron = this.network._layers[i]._neurons[j];
 				output = neuron.output;
 
-				console.log(neuron);
+				error = 0.0;
 				// If there isn't a next layer, then this is the last layer.
 				// In which case, use the ideal values rather than the error
 				// of the previous layer.
@@ -89,15 +89,12 @@ _.extend(system.prototype, {
 					// The index of this neuron is j.
 					// Therefore, the corresponding weights in each neuron
 					// will be at index j + 1.
-					error = 0.0;
 					// So for every neuron in the following layer, get the 
 					// weight value corresponding to this neuron.
 					for(k = 0; k < this.network._layers[i+1]._neurons.length; k++) {
 						// And multiply it by that neuron's gradient
 						// and add it to the error calculation.
-						error += this.network._layers[i+1]._neurons[k].weights[j+1];
-						error *= this.network._layers[i+1]._neurons[k].output * (1 - this.network._layers[i+1]._neurons[k].output);
-						error *= this.network._layers[i+1]._neurons[k].error;
+						error += this.network._layers[i+1]._neurons[k].weights[j+1] * this.network._layers[i+1]._neurons[k].output * (1 - this.network._layers[i+1]._neurons[k].output) * this.network._layers[i+1]._neurons[k].error;
 					}
 
 				}

@@ -57,6 +57,7 @@ _.extend(neuron.prototype, {
 				})(-1, 1);
 				this.updates[i+1] = 0.1;
 				this.previousUpdates[i+1] = 0.1;
+				this.previousUpdates[i+1] = 0;
 			}
 			// Sum up the weights.
 			sum += input[i] * this.weights[i+1];
