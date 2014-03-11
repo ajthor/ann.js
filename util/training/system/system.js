@@ -4,7 +4,7 @@ var extend = require("backbone-node").extend;
 var system = module.exports = function(network, options) {
 	this.network = network;
 	this.options = _.defaults((options || {}), {
-		iterations: 10000,
+		iterations: 10,
 		threshold: 0.001
 	});
 	this.initialize.apply(this, arguments);
@@ -35,7 +35,7 @@ _.extend(system.prototype, {
 				// Run the network to populate output values.
 				this.network.input(inputs[j]);
 				// Calculate gradients.
-				this.calculateGradients(inputs, ideals[j]);
+				this.calculateGradients(ideals[j]);
 				// Run a training iteration.
 				this._iteration(inputs[j], ideals[j]);
 
@@ -63,7 +63,7 @@ _.extend(system.prototype, {
 		return error;
 	},
 
-	calculateGradients: function(input, ideal) {
+	calculateGradients: function(ideal) {
 		var i, j, k, neuron, output, error;
 		// Starting from the last layer and working backward, calculate gradients.
 		for(i = this.network._layers.length-1; i >= 0; i--) {

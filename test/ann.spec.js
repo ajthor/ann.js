@@ -9,7 +9,7 @@ describe("ann", function() {
 	});
 
 	it("instantiation should work", function() {
-		var system = require("../util/training/training.js").backpropagation;
+		var system = require("../util/training/training.js").resilientpropagation;
 		var a = new ann([2,2,1], {trainingSystem: system});
 		var output;
 

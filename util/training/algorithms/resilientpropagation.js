@@ -4,9 +4,9 @@ var system = require("../system/system.js");
 var rprop = module.exports = system.extend({
 
 	sign: function(num) {
-		if(num > 0) return 1;
-		if(num < 0) return -1;
-		return 0;
+		if(Math.abs(num) < 1e-10) return 0;
+		else if(num > 0) return 1;
+		else return -1;
 	},
 
 	_iteration: function(input, ideal) {
@@ -25,9 +25,15 @@ var rprop = module.exports = system.extend({
 
 					// For all weights in neuron, ...
 					for(k = 0; k < neuron.weights.length; k++) {
-						if(!neuron.previousGradients[k]) neuron.previousGradients[k] = 0;
-
-						change = this.sign(neuron.gradients[k], neuron.previousGradients[k]);
+						// Calculate the gradient with respect to each weight,
+						// compensating for bias at k = 0. The bias is always 1,
+						// so the gradient would just be gradient * 1, anyway.
+						if(k !== 0) {
+							output = (this.network._layers[i-1] ? this.network._layers[i-1]._neurons[k-1].output : input[k-1]);
+							neuron.gradients[k] *= output;
+						}
+						// Calculate the sign change.
+						change = this.sign(neuron.gradients[k] * neuron.previousGradients[k]);
 
 						neuron.deltas[k] = 0;
 
@@ -40,9 +46,9 @@ var rprop = module.exports = system.extend({
 						}
 						else if(change < 0) {
 							// No change to the delta.
-							neuron.updates[k] = Math.max(neuron.previousUpdates[k] * negativeStep, 1e-5);
+							neuron.updates[k] = Math.max(neuron.previousUpdates[k] * negativeStep, 1e-6);
 							if(neuron.error > neuron.previousError) neuron.deltas[k] = -1 * neuron.previousDeltas[k];
-							neuron.weights[k] -= neuron.previousDeltas[k];
+							// neuron.weights[k] -= neuron.previousDeltas[k];
 							neuron.previousGradients[k] = 0;
 						}
 						else {
@@ -52,58 +58,16 @@ var rprop = module.exports = system.extend({
 							neuron.previousGradients[k] = neuron.gradients[k];
 						}
 
-						// neuron.weights[k] += neuron.deltas[k];
-
 						neuron.previousDeltas[k] = neuron.deltas[k];
 						neuron.previousUpdates[k] = neuron.updates[k];
 
-						if((i===0) && (j===0) && (k===0)) console.log(neuron);
+						if((i===0) && (j===0) && (k===1)) console.log(neuron.weights);
 
 					}
 					
 				}
 			}
 
-
-			// // For each layer, ...
-			// for(i = 0; i < this.network._layers.length; i++) {
-			// 	// For each neuron in each layer, ...
-			// 	for(j = 0; j < this.network._layers[i]._neurons.length; j++) {
-			// 		neuron = this.network._layers[i]._neurons[j];
-
-			// 		// For each weight in this neuron, ...
-			// 		for(k = 0; k < neuron.weights.length; k++) {
-			// 			if(!neuron.previousGradient[k]) neuron.previousGradient[k] = 0;
-			// 			change = this.sign(neuron.gradient[k] * neuron.previousGradient[k]);
-
-			// 			if(change > 0) {
-			// 				// Sign has changed. Last delta was too big.
-			// 				neuron.updates[k] = Math.min(neuron.previousUpdates[k] * positiveStep, 50);
-			// 				neuron.deltas[k] = -1 * this.sign(neuron.gradient[k]) * neuron.updates[k];
-			// 				neuron.weights[k] += neuron.deltas[k];
-			// 				neuron.previousGradient[k] = neuron.gradient[k];
-			// 			}
-			// 			else if(change < 0) {
-			// 				// No change to the delta.
-			// 				neuron.updates[k] = Math.max(neuron.previousUpdates[k] * negativeStep, 1e-5);
-			// 				neuron.deltas[k] = -1 * neuron.previousDeltas[k];
-			// 				neuron.weights[k] -= neuron.previousDeltas[k];
-			// 				neuron.previousGradient[k] = 0;
-			// 			}
-			// 			else {
-			// 				// Change is zero.
-			// 				neuron.deltas[k] = -1 * this.sign(neuron.gradient[k]) * neuron.updates[k];
-			// 				neuron.weights[k] += neuron.deltas[k];
-			// 				neuron.previousGradient[k] = neuron.gradient[k];
-			// 			}
-
-			// 			neuron.previousDeltas[k] = neuron.deltas[k];
-			// 			neuron.previousUpdates[k] = neuron.updates[k];
-
-			// 			if((i===0) && (j===0) && (k===0)) console.log(neuron);
-			// 		}
-			// 	}
-			// }
 
 		} catch(e) {
 			console.log("Error:", e.stack);
