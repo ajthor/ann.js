@@ -8,7 +8,7 @@ var backpropagation = module.exports = system.extend({
 		if(!this.options.momentum) this.options.momentum = 0.9;
 	},
 
-	_iteration: function(input, ideal) {
+	_iteration: function() {
 		try {
 			var i, j, k;
 			var neuron, output;
@@ -25,14 +25,11 @@ var backpropagation = module.exports = system.extend({
 					// For each weight, ...
 					for(k = 1; k < neuron.weights.length; k++) {
 						// Modify the weight by multiplying the weight by the
-						// learning rate and the input of the neuron preceding.
-						// If no preceding layer, then use the input layer.
-						neuron.gradients[k] *= (this.network._layers[i-1] ? this.network._layers[i-1]._neurons[k-1].output : input[k-1]);
+						// learning rate and the derivative w/r to this weight.
 						neuron.deltas[k] = this.options.learningRate * neuron.gradients[k];
 						neuron.weights[k] += neuron.deltas[k];
+						// Apply momentum values.
 						neuron.weights[k] += this.options.momentum * neuron.previousDeltas[k];
-
-						// if((i==0) && (j==0) && (k==1)) console.log(neuron);
 
 					}
 					// Set previous delta values.

@@ -5,18 +5,57 @@ var rprop = module.exports = system.extend({
 
 	sign: function(num) {
 		if(Math.abs(num) < 1e-10) return 0;
-		else if(num > 0) return 1;
-		else return -1;
+		// if(num === 0) return 0;
+		if(num > 0) return 1;
+		return -1;
 	},
 
-	_iteration: function(input, ideal) {
+	train: function(inputs, ideals) {
+		var i, j, index, sum, error = 1.0;
+		// Start training.
+		console.log("RPROP training started.");
+
+		// Train until error < threshold OR iterations = maximum
+		for(i = 0; ((error > this.options.threshold) && (i < this.options.iterations)); i++) {
+			// Run through all inputs and ideals.
+			sum = 0;
+
+			for(j = 0; j < inputs.length; j++) {
+				
+				// Run the network to populate output values.
+				this.network.input(inputs[j]);
+				// Calculate gradients.
+				this.calculateGradients(inputs[j], ideals[j]);
+
+				// Run a training iteration.
+				this._iteration();
+				console.log(this.network._layers[0]._neurons[0].deltas);
+
+				sum += this.calculateError(ideals[j]);
+			}
+			// Now update the weights.
+			this.updateWeights();
+			console.log(this.network._layers[0]._neurons[0].weights);
+
+			// And calculate the batch error.
+			error = sum / inputs.length;
+			console.log("Error is at: %d", error);
+			console.log("End of an epoch.\n");
+		} // End of an epoch.
+
+		// End training.
+		console.log("Training finished in %d iterations.", i);
+		console.log("Error is at: %d", error);
+	},
+
+	_iteration: function() {
 		try {
-			var i, j, k, change;
+			var index, i, j, k, change, delta, weightChange;
 			var neuron, output;
 
 			var positiveStep = 1.2;
 			var negativeStep = 0.5;
-			
+				
 			// Now that gradients are calculated, work forward to update weights.
 			// For each layer, and each neuron in each layer, ...
 			for(i = 0; i < this.network._layers.length; i++) {
@@ -25,52 +64,75 @@ var rprop = module.exports = system.extend({
 
 					// For all weights in neuron, ...
 					for(k = 0; k < neuron.weights.length; k++) {
-						// Calculate the gradient with respect to each weight,
-						// compensating for bias at k = 0. The bias is always 1,
-						// so the gradient would just be gradient * 1, anyway.
-						if(k !== 0) {
-							output = (this.network._layers[i-1] ? this.network._layers[i-1]._neurons[k-1].output : input[k-1]);
-							neuron.gradients[k] *= output;
-						}
+
 						// Calculate the sign change.
 						change = this.sign(neuron.gradients[k] * neuron.previousGradients[k]);
+						// neuron.deltas[k] = 0;
 
-						neuron.deltas[k] = 0;
 
+						// IRPROP+
 						if(change > 0) {
-							// Sign has changed. Last delta was too big.
-							neuron.updates[k] = Math.min(neuron.previousUpdates[k] * positiveStep, 50);
-							neuron.deltas[k] = -1 * this.sign(neuron.gradients[k]) * neuron.updates[k];
-							neuron.weights[k] += neuron.deltas[k];
+
+							neuron.updates[k] = Math.min((neuron.previousUpdates[k] * positiveStep), 50);
+							neuron.deltas[k] += this.sign(neuron.gradients[k]) * neuron.updates[k];
 							neuron.previousGradients[k] = neuron.gradients[k];
+
 						}
 						else if(change < 0) {
-							// No change to the delta.
-							neuron.updates[k] = Math.max(neuron.previousUpdates[k] * negativeStep, 1e-6);
-							if(neuron.error > neuron.previousError) neuron.deltas[k] = -1 * neuron.previousDeltas[k];
-							// neuron.weights[k] -= neuron.previousDeltas[k];
+
+							neuron.updates[k] = Math.max((neuron.previousUpdates[k] * negativeStep), 0.00001);
+							if(neuron.error > neuron.previousError) neuron.deltas[k] += -1 * neuron.previousDeltas[k];
 							neuron.previousGradients[k] = 0;
+
 						}
 						else {
-							// Change is zero.
-							neuron.deltas[k] = -1 * this.sign(neuron.gradients[k]) * neuron.updates[k];
-							neuron.weights[k] += neuron.deltas[k];
+
+							neuron.deltas[k] += this.sign(neuron.gradients[k]) * neuron.updates[k];
 							neuron.previousGradients[k] = neuron.gradients[k];
+
 						}
 
-						neuron.previousDeltas[k] = neuron.deltas[k];
-						neuron.previousUpdates[k] = neuron.updates[k];
 
-						if((i===0) && (j===0) && (k===1)) console.log(neuron.weights);
+						// IRPROP-
+						// if(change > 0) {
+						// 	neuron.updates[k] = Math.min((neuron.previousUpdates[k] * positiveStep), 50);
+						// }
+						// else if(change < 0) {
+						// 	neuron.updates[k] = Math.min((neuron.previousUpdates[k] * negativeStep), 1e-6);
+						// 	neuron.gradients[k] = 0;
+						// }
+
+						// neuron.deltas[k] += (this.sign(neuron.gradients[k]) * neuron.updates[k]);
+
+
 
 					}
+
+					neuron.previousDeltas = neuron.deltas.slice();
+					neuron.previousUpdates = neuron.updates.slice();
 					
 				}
 			}
 
-
 		} catch(e) {
 			console.log("Error:", e.stack);
+		}
+	},
+
+	updateWeights: function() {
+		var i, j;
+		// After calculating the deltas for each training sample,
+		// update the weights.
+		for(i = 0; i < this.network._layers.length; i++) {
+			for(j = 0; j < this.network._layers[i]._neurons.length; j++) {
+				neuron = this.network._layers[i]._neurons[j];
+
+				for(k = 0; k < neuron.weights.length; k++) {
+					neuron.weights[k] += neuron.deltas[k];
+					// Reset delta values.
+					neuron.deltas[k] = 0;
+				}
+			}
 		}
 	}
 

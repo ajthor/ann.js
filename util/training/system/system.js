@@ -4,8 +4,8 @@ var extend = require("backbone-node").extend;
 var system = module.exports = function(network, options) {
 	this.network = network;
 	this.options = _.defaults((options || {}), {
-		iterations: 10,
-		threshold: 0.001
+		iterations: 2,
+		threshold: 0.0001
 	});
 	this.initialize.apply(this, arguments);
 };
@@ -21,8 +21,7 @@ _.extend(system.prototype, {
 	train: function(inputs, ideals) {
 		var i, j, index, sum, error = 1.0;
 		// Start training.
-		error = this.calculateError(ideals[0]);
-		console.log("Training started with %d error.", error);
+		console.log("Training started.");
 		// Cycle through inputs and ideal values to train network
 		// and avoid problem of "catastrophic forgetting"
 
@@ -35,9 +34,9 @@ _.extend(system.prototype, {
 				// Run the network to populate output values.
 				this.network.input(inputs[j]);
 				// Calculate gradients.
-				this.calculateGradients(ideals[j]);
+				this.calculateGradients(inputs[j], ideals[j]);
 				// Run a training iteration.
-				this._iteration(inputs[j], ideals[j]);
+				this._iteration(inputs, ideals);
 
 
 				sum += this.calculateError(ideals[j]);
@@ -63,12 +62,12 @@ _.extend(system.prototype, {
 		return error;
 	},
 
-	calculateGradients: function(ideal) {
+	calculateGradients: function(inputs, ideal) {
 		var i, j, k, neuron, output, error;
 		// Starting from the last layer and working backward, calculate gradients.
 		for(i = this.network._layers.length-1; i >= 0; i--) {
-			// Cycle through output neurons and calculate their gradients.
-			for(j = 0; j < this.network._layers[i]._neurons.length; j++) {
+			// Cycle through neurons and calculate their gradients.
+			for(j = 1; j < this.network._layers[i]._neurons.length; j++) {
 				neuron = this.network._layers[i]._neurons[j];
 				output = neuron.output;
 
@@ -88,13 +87,13 @@ _.extend(system.prototype, {
 				else {
 					// The index of this neuron is j.
 					// Therefore, the corresponding weights in each neuron
-					// will be at index j + 1.
+					// will be at index j.
 					// So for every neuron in the following layer, get the 
 					// weight value corresponding to this neuron.
 					for(k = 0; k < this.network._layers[i+1]._neurons.length; k++) {
 						// And multiply it by that neuron's gradient
 						// and add it to the error calculation.
-						error += this.network._layers[i+1]._neurons[k].weights[j+1] * this.network._layers[i+1]._neurons[k].output * (1 - this.network._layers[i+1]._neurons[k].output) * this.network._layers[i+1]._neurons[k].error;
+						error += this.network._layers[i+1]._neurons[k].weights[j] * this.network._layers[i+1]._neurons[k].delta;
 					}
 
 				}
@@ -103,12 +102,31 @@ _.extend(system.prototype, {
 				neuron.previousError = neuron.error;
 				neuron.error = error;
 
+				neuron.delta = output * (1 - output) * error;
+
 				for(k = 0; k < neuron.weights.length; k++) {
-					neuron.gradients[k] = output * (1 - output) * error;
+					neuron.gradients[k] = neuron.delta;
 				}
 			}
 
 		}
+
+		// Working forwards, after all partial derivatives have been calculated, ...
+		for(i = 0; i < this.network._layers.length; i++) {
+			for(j = 0; j < this.network._layers[i]._neurons.length; j++) {
+				neuron = this.network._layers[i]._neurons[j];
+
+				// Calculate the gradient with respect to each weight,
+				// compensating for bias at k = 0. The bias is always 1,
+				// so the gradient would just be gradient * 1, anyway.
+				for(k = 1; k < neuron.gradients.length; k++) {
+					output = (i > 0) ? this.network._layers[i-1]._neurons[k-1].output : inputs[k-1];
+					neuron.gradients[k] *= output;
+				}
+
+			}
+		}
+
 	}
 	
 });
