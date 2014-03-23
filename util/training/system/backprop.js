@@ -1,5 +1,5 @@
 var _ = require("lodash");
-var system = require("../system/system.js");
+var system = require("../system.js");
 
 var backpropagation = module.exports = system.extend({
 
@@ -45,5 +45,4 @@ var backpropagation = module.exports = system.extend({
 
 
 });
-
 
