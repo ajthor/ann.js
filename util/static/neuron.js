@@ -45,9 +45,14 @@ _.extend(neuron.prototype, {
 
 		this.input = sum;
 		// Sigmoid activation function.
-		return this.output = (function(input) {
-								return ( 1 / (1 + Math.exp(-1 * input)) );
+		return this.output = (function(x) {
+								return ( 1 / (1 + Math.exp(-1 * x)) );
 							})(sum);
+		
+		// // Hyperbolic tangent function.
+		// return this.output = (function tanh(x) {
+		// 						return  (Math.exp(x) - Math.exp(-x)) / (Math.exp(x) + Math.exp(-x));
+		// 					})(sum);
 	}
 
 });

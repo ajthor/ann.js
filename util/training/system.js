@@ -149,7 +149,8 @@ _.extend(system.prototype, {
 				n[i][j].previousError = n[i][j].error;
 				n[i][j].error = error;
 				// Assign delta.
-				n[i][j].delta = n[i][j].output * (1 - n[i][j].output) * error;
+				n[i][j].delta = ((n[i][j].output * (1 - n[i][j].output)) + 0.1) * error; // Sigmoid
+				// n[i][j].delta = ( 1 - (n[i][j].output * n[i][j].output) ) * error; // tanh
 
 			}
 
