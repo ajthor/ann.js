@@ -36,7 +36,7 @@ _.extend(neuron.prototype, {
 				})(-1, 1);
 
 				this.deltas[i] = 0;
-				this.updates[i] = 1;
+				this.updates[i] = 0.1;
 			}
 
 			// Sum up the weights.

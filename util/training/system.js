@@ -4,7 +4,7 @@ var extend = require("backbone-node").extend;
 var system = module.exports = function(network, options) {
 	this.network = network;
 	this.options = _.defaults((options || {}), {
-		iterations: 2,
+		iterations: 100,
 		threshold: 0.0001
 	});
 	this.initialize.apply(this, arguments);
@@ -25,27 +25,30 @@ _.extend(system.prototype, {
 		// Cycle through inputs and ideal values to train network
 		// and avoid the problem of catastrophic forgetting.
 
+		// // Reset neurons.
 		this.resetNeurons();
 
 		// Train until error < threshold OR iterations = maximum
 		for(i = 0; ((error > this.options.threshold) && (i < this.options.iterations)); i++) {
 			// Run through all inputs and ideal values.
 			sum = 0;
+
+			// Reset neurons.
+			this.resetNeurons();
+
 			for(j = 0; j < inputs.length; j++) {
 				// Run the network to populate values.
 				this.network.parse(inputs[j]);
 
-				// Reset deltas.
-				this.resetNeurons();
-
-				// Calculate gradients.
+				// Calculate gradients. (Batch mode)
 				this.calculateGradients(inputs[j], ideals[j]);
-				// Run a training iteration.
-				this.calculateDeltas();
 
 				// Calculate error.
 				sum += this.calculateError(ideals[j]);
 			}
+
+			// Run a training iteration.
+			this.calculateDeltas();
 
 			// And finally, update the weights.
 			this.updateWeights();
@@ -67,15 +70,23 @@ _.extend(system.prototype, {
 		for(i = 0; i < n.length; i++) {
 			for(j = 0; j < n[i].length; j++) {
 
+				// Assign previousError value.
+				n[i][j].previousError = n[i][j].error;
+				n[i][j].error = 0;
+
 				// Assign previousGradients values.
 				n[i][j].previousGradients = n[i][j].gradients.slice();
-				// Reset gradient values.
-				n[i][j].gradients = Array.apply(null, new Array(n[i][j].weights.length)).map(Number.prototype.valueOf,0);
-
 				// Assign previousDeltas values.
 				n[i][j].previousDeltas = n[i][j].deltas.slice();
+				// Assign previousUpdates values.
+				n[i][j].previousUpdates = n[i][j].deltas.slice();
+
+				// Reset gradient values.
+				n[i][j].gradients = Array.apply(null, new Array(n[i][j].weights.length)).map(Number.prototype.valueOf,0);
 				// Reset delta values.
-				// n[i][j].deltas = Array.apply(null, new Array(n[i][j].weights.length)).map(Number.prototype.valueOf,0);
+				n[i][j].deltas = Array.apply(null, new Array(n[i][j].weights.length)).map(Number.prototype.valueOf,0);
+				// Reset update values.
+				// n[i][j].updates = Array.apply(null, new Array(n[i][j].weights.length)).map(Number.prototype.valueOf,0.1);
 
 			}
 		}
@@ -92,7 +103,6 @@ _.extend(system.prototype, {
 					// Add each delta value to the weight.
 					n[i][j].weights[k] += n[i][j].deltas[k];
 					
-					// if(i==2 && j==0) console.log(i, j, n[i][j]);
 				}
 
 			}
@@ -139,7 +149,6 @@ _.extend(system.prototype, {
 				}
 
 				// Assign error to neuron.
-				n[i][j].previousError = n[i][j].error;
 				n[i][j].error = error;
 				// Assign delta.
 				n[i][j].delta = n[i][j].output * (1 - n[i][j].output) * error;
@@ -154,7 +163,7 @@ _.extend(system.prototype, {
 				// Set up gradient values for the future.
 				// Gradients are the derivatives w/r to the weights.
 				for(k = 0; k < n[i][j].gradients.length; k++) {
-					n[i][j].gradients[k] = n[i][j].delta * ((i > 0) ? n[i-1][k].output : inputs[k]);
+					n[i][j].gradients[k] += n[i][j].delta * ((i > 0) ? n[i-1][k].output : inputs[k]);
 				}
 
 			}
