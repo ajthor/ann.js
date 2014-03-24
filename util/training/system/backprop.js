@@ -19,7 +19,7 @@ var backpropagation = module.exports = system.extend({
 					for(k = 0; k < n[i][j].weights.length; k++) {
 						// Modify the weight by multiplying the weight by the
 						// learning rate and the derivative w/r to this weight.
-						n[i][j].deltas[k] = this.options.learningRate * n[i][j].gradients[k];
+						n[i][j].deltas[k] += this.options.learningRate * n[i][j].gradients[k];
 						// Apply momentum values.
 						n[i][j].deltas[k] += this.options.momentum * n[i][j].previousDeltas[k];
 

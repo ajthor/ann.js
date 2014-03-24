@@ -4,7 +4,7 @@ var extend = require("backbone-node").extend;
 var system = module.exports = function(network, options) {
 	this.network = network;
 	this.options = _.defaults((options || {}), {
-		iterations: 2000,
+		iterations: 2,
 		threshold: 0.0001
 	});
 	this.initialize.apply(this, arguments);
@@ -53,7 +53,7 @@ _.extend(system.prototype, {
 			// And calculate the batch error.
 			error = sum / inputs.length;
 
-			if(!(i % 100)) console.log("Error: [ %d ]", error);
+			if(!(i % 100)) console.log("Error: [ %d ] %d", error, i);
 		}
 		// End training.
 		console.log("Training finished in %d iterations.", i);
@@ -75,7 +75,7 @@ _.extend(system.prototype, {
 				// Assign previousDeltas values.
 				n[i][j].previousDeltas = n[i][j].deltas.slice();
 				// Reset delta values.
-				n[i][j].deltas = Array.apply(null, new Array(n[i][j].weights.length)).map(Number.prototype.valueOf,0);
+				// n[i][j].deltas = Array.apply(null, new Array(n[i][j].weights.length)).map(Number.prototype.valueOf,0);
 
 			}
 		}
@@ -92,7 +92,7 @@ _.extend(system.prototype, {
 					// Add each delta value to the weight.
 					n[i][j].weights[k] += n[i][j].deltas[k];
 					
-					// console.log(i, j, n[i][j].deltas);
+					// if(i==2 && j==0) console.log(i, j, n[i][j]);
 				}
 
 			}
@@ -139,6 +139,7 @@ _.extend(system.prototype, {
 				}
 
 				// Assign error to neuron.
+				n[i][j].previousError = n[i][j].error;
 				n[i][j].error = error;
 				// Assign delta.
 				n[i][j].delta = n[i][j].output * (1 - n[i][j].output) * error;
@@ -153,7 +154,7 @@ _.extend(system.prototype, {
 				// Set up gradient values for the future.
 				// Gradients are the derivatives w/r to the weights.
 				for(k = 0; k < n[i][j].gradients.length; k++) {
-					n[i][j].gradients[k] += n[i][j].delta * ((i > 0) ? n[i-1][k].output : inputs[k]);
+					n[i][j].gradients[k] = n[i][j].delta * ((i > 0) ? n[i-1][k].output : inputs[k]);
 				}
 
 			}
