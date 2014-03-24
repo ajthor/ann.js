@@ -9,7 +9,7 @@ var matrix = module.exports = function matrix(neurons, options) {
 	});
 
 	// Create empty matrix array.
-	this.neurons = [];
+	this.neurons = this.n = [];
 
 	this.initialize(neurons, options);
 };
@@ -19,22 +19,21 @@ _.extend(matrix.prototype, {
 		var i, j;
 		// Set up matrix.
 		for(i = 0; i < neurons.length; i++) {
-			this.neurons[i] = [];
+			this.n[i] = [];
 			// For this layer, create new neurons.
 			for(j = 0; j < neurons[i]; j++) {
-				this.neurons[i][j] = new neuron(options);
+				this.n[i][j] = new neuron();
 			}
-
+			// If 'hasBias' options is set, create a bias neuron.
 			if((this.options.hasBias) && (i < neurons.length-1)) {
-				this.neurons[i].push(new bias(options));
+				this.n[i].push(new bias());
 			}
 		}
-
 	},
 
 	get: function(x, y) {
-		if(!y) return this.neurons[x];
-		return this.neurons[x][y];
+		if(!y) return this.n[x];
+		return this.n[x][y];
 	},
 
 	parse: function(input) {
@@ -44,11 +43,11 @@ _.extend(matrix.prototype, {
 		result[-1] = input.slice();
 
 		// For every 'layer', ...
-		for(i = 0; i < this.neurons.length; i++) {
+		for(i = 0; i < this.n.length; i++) {
 			// Assign a value to the result array.
 			result[i] = [];
-			for(j = 0; j < this.neurons[i].length; j++) {
-				result[i][j] = this.neurons[i][j].parse(result[i-1]);
+			for(j = 0; j < this.n[i].length; j++) {
+				result[i][j] = this.n[i][j].parse(result[i-1]);
 			}
 		}
 

@@ -12,6 +12,8 @@ var neuron = module.exports = function neuron(options) {
 	// Variables to aid in training.
 	this.delta;
 	this.deltas = [];
+	this.updates = [];
+	this.gradients = [];
 
 	this.initialize(options);
 };
@@ -32,6 +34,9 @@ _.extend(neuron.prototype, {
 				this.weights[i] = (function(min, max) {
 					return Math.random() * (max - min + 1) + min;
 				})(-1, 1);
+
+				this.deltas[i] = 0;
+				this.updates[i] = 0.1;
 			}
 
 			// Sum up the weights.

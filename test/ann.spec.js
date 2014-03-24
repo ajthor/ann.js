@@ -9,8 +9,8 @@ describe("ann", function() {
 	});
 
 	it("instantiation should work", function() {
-		var system = require("../util/training/training.js").backprop;
-		// var system = require("../util/training/training.js").rprop;
+		// var system = require("../util/training/training.js").backprop;
+		var system = require("../util/training/training.js").rprop;
 		var a = new ann([2,3,1], {trainingSystem: system});
 		var output;
 
@@ -19,7 +19,7 @@ describe("ann", function() {
 		console.log(a.parse([0,1]));
 		console.log(a.parse([1,1]));
 
-		// a.train([[0,0], [0,1], [1,0], [1,1]], [[0], [1], [1], [0]]);
+		a.train([[0,0], [0,1], [1,0], [1,1]], [[0], [1], [1], [0]]);
 		// a.train([[0,1]], [[1]]);
 		// a.train([[1,0]], [[1]]);
 

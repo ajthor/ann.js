@@ -8,32 +8,27 @@ var backpropagation = module.exports = system.extend({
 		if(!this.options.momentum) this.options.momentum = 0.9;
 	},
 
-	_iteration: function() {
+	calculateDeltas: function() {
 		try {
-			var i, j, k;
-			var neuron, output;
+			var i, j, k, n = this.network.matrix.neurons;
 			// Begin backpropagation.
 
-			// Once all gradients are calculated, work forward and calculate
-			// the new weights. w = w + (lr * df/de * in)
-			for(i = 0; i < this.network._layers.length; i++) {
-				// For each neuron in each layer, ...
-				for(j = 0; j < this.network._layers[i]._neurons.length; j++) {
-					neuron = this.network._layers[i]._neurons[j];
-					// Modify the bias.
-					neuron.weights[0] += this.options.learningRate * neuron.gradients[0];
+			for(i = 0; i < n.length; i++) {
+				for(j = 0; j < n[i].length; j++) {
 					// For each weight, ...
-					for(k = 1; k < neuron.weights.length; k++) {
+					for(k = 0; k < n[i][j].weights.length; k++) {
 						// Modify the weight by multiplying the weight by the
 						// learning rate and the derivative w/r to this weight.
-						neuron.deltas[k] = this.options.learningRate * neuron.gradients[k];
-						neuron.weights[k] += neuron.deltas[k];
+						n[i][j].deltas[k] = this.options.learningRate * n[i][j].gradients[k];
 						// Apply momentum values.
-						neuron.weights[k] += this.options.momentum * neuron.previousDeltas[k];
+						n[i][j].deltas[k] += this.options.momentum * n[i][j].previousDeltas[k];
 
+						// on-line training will use these two lines:
+						// n[i][j].weights[k] += n[i][j].deltas[k];
 					}
+
 					// Set previous delta values.
-					neuron.previousDeltas = neuron.deltas.slice();
+					// n[i][j].previousDeltas = n[i][j].deltas.slice();
 
 				}
 			}
