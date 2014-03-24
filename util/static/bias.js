@@ -18,6 +18,7 @@ var bias = module.exports = neuron.extend({
 		for(var i = 0; i < input.length; i++) {
 			if(!this.weights[i]) {
 				this.weights[i] = 1;
+				
 				this.updates[i] = 0;
 				this.deltas[i] = 0;
 			}

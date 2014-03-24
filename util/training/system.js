@@ -4,7 +4,7 @@ var extend = require("backbone-node").extend;
 var system = module.exports = function(network, options) {
 	this.network = network;
 	this.options = _.defaults((options || {}), {
-		iterations: 100,
+		iterations: 20000,
 		threshold: 0.0001
 	});
 	this.initialize.apply(this, arguments);
@@ -24,9 +24,6 @@ _.extend(system.prototype, {
 
 		// Cycle through inputs and ideal values to train network
 		// and avoid the problem of catastrophic forgetting.
-
-		// // Reset neurons.
-		this.resetNeurons();
 
 		// Train until error < threshold OR iterations = maximum
 		for(i = 0; ((error > this.options.threshold) && (i < this.options.iterations)); i++) {
@@ -79,7 +76,7 @@ _.extend(system.prototype, {
 				// Assign previousDeltas values.
 				n[i][j].previousDeltas = n[i][j].deltas.slice();
 				// Assign previousUpdates values.
-				n[i][j].previousUpdates = n[i][j].deltas.slice();
+				n[i][j].previousUpdates = n[i][j].updates.slice();
 
 				// Reset gradient values.
 				n[i][j].gradients = Array.apply(null, new Array(n[i][j].weights.length)).map(Number.prototype.valueOf,0);
@@ -149,6 +146,7 @@ _.extend(system.prototype, {
 				}
 
 				// Assign error to neuron.
+				n[i][j].previousError = n[i][j].error;
 				n[i][j].error = error;
 				// Assign delta.
 				n[i][j].delta = n[i][j].output * (1 - n[i][j].output) * error;

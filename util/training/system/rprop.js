@@ -24,7 +24,7 @@ var rprop = module.exports = system.extend({
 			for(i = 0; i < n.length; i++) {
 				for(j = 0; j < n[i].length; j++) {
 
-					if(i==2 && j==0) console.log("before", i, j, n[i][j].updates);
+					// if(i==2 && j==0) console.log("before", i, j, n[i][j].previousUpdates);
 					// For all weights in neuron, ...
 					for(k = 0; k < n[i][j].weights.length; k++) {
 
@@ -66,7 +66,7 @@ var rprop = module.exports = system.extend({
 						// n[i][j].deltas[k] = (-1 * this.sign(n[i][j].gradients[k]) * n[i][j].updates[k]);
 					}
 					
-					if(i==2 && j==0) console.log("after", i, j, n[i][j].updates);
+					// if(i==2 && j==0) console.log("after", i, j, n[i][j].previousUpdates);
 
 				}
 			}
