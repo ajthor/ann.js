@@ -3,18 +3,36 @@ var extend = require("backbone-node").extend;
 
 var neuron = module.exports = function neuron(options) {
 	this.options = _.defaults((options || {}), {
-		// activation: sigmoid
+
 	});
+
+	// Sigmoid function.
+	this.activation = function sigmoid(x) {
+						return ( 1 / (1 + Math.exp(-1 * x)) );
+					};
+	this.derivative = function ddxsigmoid(x) {
+						return ( this.output * (1 - this.output) ) + 0.1;
+					};
+
+	// // Hyperbolic tangent function.
+	// this.activation = function tanh(x) {
+	// 					return (Math.exp(x) - Math.exp(-x)) / (Math.exp(x) + Math.exp(-x));
+	// 				};
+	// this.derivative = function dtanh(x) { // tanh
+	// 					return ( 1 - (this.output * this.output) ); 
+	// 				};
 	
 	// Array of weights.
 	this.weights = [];
 
 	// Variables to aid in training.
 	this.delta;
+
 	this.deltas = [];
 	this.updates = [];
 	this.gradients = [];
 
+	// Initialize neuron.
 	this.initialize(options);
 };
 
@@ -34,6 +52,7 @@ _.extend(neuron.prototype, {
 				this.weights[i] = (function(min, max) {
 					return Math.random() * (max - min + 1) + min;
 				})(-1, 1);
+				// this.weights[i] = Math.random();
 
 				this.deltas[i] = 0;
 				this.updates[i] = 0.1;
@@ -44,15 +63,8 @@ _.extend(neuron.prototype, {
 		}
 
 		this.input = sum;
-		// Sigmoid activation function.
-		return this.output = (function(x) {
-								return ( 1 / (1 + Math.exp(-1 * x)) );
-							})(sum);
 		
-		// // Hyperbolic tangent function.
-		// return this.output = (function tanh(x) {
-		// 						return  (Math.exp(x) - Math.exp(-x)) / (Math.exp(x) + Math.exp(-x));
-		// 					})(sum);
+		return this.output = this.activation(sum);
 	}
 
 });
