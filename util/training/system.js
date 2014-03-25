@@ -40,7 +40,7 @@ _.extend(system.prototype, {
 				// Calculate gradients. (Batch mode)
 				this.calculateGradients(inputs[j], ideals[j]);
 				// Calculate error.
-				sum += this.calculateError(ideals[j]);
+				sum += this.network.matrix.calculateError(ideals[j]);
 
 			}
 
@@ -116,18 +116,6 @@ _.extend(system.prototype, {
 
 			}
 		}
-	},
-
-	calculateError: function(ideal) {
-		var n = this.network.matrix.neurons;
-		var error = 0.0;
-		var lastLayer = n[n.length-1];
-		// For every neuron in the last layer, ...
-		for(var i = 0; i < lastLayer.length; i++) {
-			// Calculate total error.
-			error += Math.pow((ideal[i] - lastLayer[i].output), 2);
-		}
-		return error;
 	},
 
 	calculateGradients: function(inputs, ideals) {

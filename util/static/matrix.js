@@ -32,6 +32,16 @@ _.extend(matrix.prototype, {
 		}
 	},
 
+	calculateError: function(ideal) {
+		var error = 0.0;
+		// For every neuron in the last layer, ...
+		for(var i = 0; i < this.n[this.n.length-1].length; i++) {
+			// Calculate total error.
+			error += Math.pow(( ideal[i] - this.n[this.n.length-1][i].output ), 2);
+		}
+		return error;
+	},
+
 	forEach: function(cb, handler) {
 		try {
 			if(!cb) throw new Error("Must supply a callback to the 'forEach' function.");
@@ -57,7 +67,6 @@ _.extend(matrix.prototype, {
 			}
 		});
 		// Populate clone matrix values using last input.
-		console.log(this.result);
 		clone.run(this.result[-1]);
 		return clone;
 	},
