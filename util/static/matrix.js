@@ -3,37 +3,58 @@ var _ = require("lodash");
 var bias = require("./bias.js");
 var neuron = require("./neuron.js");
 
-var matrix = module.exports = function matrix(neurons, options) {
+var matrix = module.exports = function matrix(configuration, options) {
 	this.options = _.defaults((options || {}), {
+		configuration: configuration,
 		hasBias: true
 	});
 
 	// Create empty matrix array.
 	this.neurons = this.n = [];
 
-	this.initialize(neurons, options);
+	this.initialize(configuration, options);
 };
 
 _.extend(matrix.prototype, {
-	initialize: function(neurons, options) {
+	initialize: function(configuration, options) {
 		var i, j;
 		// Set up matrix.
-		for(i = 0; i < neurons.length; i++) {
+		for(i = 0; i < configuration.length; i++) {
 			this.n[i] = [];
 			// For this layer, create new neurons.
-			for(j = 0; j < neurons[i]; j++) {
+			for(j = 0; j < configuration[i]; j++) {
 				this.n[i][j] = new neuron();
 			}
 			// If 'hasBias' options is set, create a bias neuron.
-			if((this.options.hasBias) && (i < neurons.length-1)) {
+			if((this.options.hasBias) && (i < configuration.length-1)) {
 				this.n[i].push(new bias());
 			}
 		}
 	},
 
-	get: function(x, y) {
-		if(!y) return this.n[x];
-		return this.n[x][y];
+	forEach: function(cb, handler) {
+		try {
+			if(!cb) throw new Error("Must supply a callback to the 'forEach' function.");
+			handler || (handler = this);
+			var i, j;
+			for(i = 0; i < this.n.length; i++) {
+				for(j = 0; j < this.n[i].length; j++) {
+					cb.call(handler, this.n[i][j], i, j);
+				}
+			}
+		} catch(e) {
+			console.log("Error:", e.stack);
+		}
+	},
+
+	clone: function() {
+		var clone = new this.constructor(this.options.configuration, this.options);
+		this.forEach(function(n, i, j) {
+			for(var k = 0; k < n.weights.length; k++) {
+				clone.n[i][j].weights[k] = n.weights[k];
+			}
+		});
+		return clone;
 	},
 
 	parse: function(input) {
