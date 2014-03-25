@@ -41,7 +41,7 @@ neuron.extend = extend;
 _.extend(neuron.prototype, {
 	initialize: function(options) {},
 	
-	parse: function(input) {
+	run: function(input) {
 		var sum = 0;
 		// Cycle through each input and multiply it by a weight value.
 		for(var i = 0, len = input.length; i < len; i++) {

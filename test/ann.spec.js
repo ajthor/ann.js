@@ -16,10 +16,10 @@ describe("ann", function() {
 
 		var a = new ann([2,3,1], {trainingSystem: system});
 
-		console.log(a.parse([0,0]));
-		console.log(a.parse([1,0]));
-		console.log(a.parse([0,1]));
-		console.log(a.parse([1,1]));
+		console.log(a.run([0,0]));
+		console.log(a.run([1,0]));
+		console.log(a.run([0,1]));
+		console.log(a.run([1,1]));
 
 		a.train([[0,0], [0,1], [1,0], [1,1]], [[0], [1], [1], [0]]);
 		// a.train([[0,1]], [[1]]);
@@ -32,10 +32,10 @@ describe("ann", function() {
 		
 		// a.train([[0,0]], [[0]]);
 
-		console.log(a.parse([0,0]));
-		console.log(a.parse([1,0]));
-		console.log(a.parse([0,1]));
-		console.log(a.parse([1,1]));
+		console.log(a.run([0,0]));
+		console.log(a.run([1,0]));
+		console.log(a.run([0,1]));
+		console.log(a.run([1,1]));
 
 
 	});

@@ -48,16 +48,21 @@ _.extend(matrix.prototype, {
 	},
 
 	clone: function() {
+		// Create new matrix object.
 		var clone = new this.constructor(this.options.configuration, this.options);
+		// Copy weights from this object to the clone.
 		this.forEach(function(n, i, j) {
 			for(var k = 0; k < n.weights.length; k++) {
 				clone.n[i][j].weights[k] = n.weights[k];
 			}
 		});
+		// Populate clone matrix values using last input.
+		console.log(this.result);
+		clone.run(this.result[-1]);
 		return clone;
 	},
 
-	parse: function(input) {
+	run: function(input) {
 		var i, j, result = [];
 		// Copy the input array to avoid changes to the original.
 		// Set it to be the 'input' layer.
@@ -68,11 +73,12 @@ _.extend(matrix.prototype, {
 			// Assign a value to the result array.
 			result[i] = [];
 			for(j = 0; j < this.n[i].length; j++) {
-				result[i][j] = this.n[i][j].parse(result[i-1]);
+				result[i][j] = this.n[i][j].run(result[i-1]);
 			}
 		}
 
-		// console.log("RESULT", result);
+		// Copy result array to local property.
+		this.result = result;
 
 		return result[i-1];
 	}
