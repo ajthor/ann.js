@@ -18,7 +18,7 @@ var network = module.exports = function(count, options) {
 	}
 	// Initialize network.
 	if(!count) count = [2, 1]; // Single layer with 2 neurons and 1 output neuron.
-	this.matrix = this.m = this.n = new matrix(count, options);
+	this.matrix = this.m = new matrix(count, options);
 
 	this.initialize(count, options);
 };
