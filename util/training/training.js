@@ -1,4 +1,4 @@
-exports.system = require("./system/system.js");
+exports.system = require("./system.js");
 
-exports.backpropagation = require("./algorithms/backpropagation.js");
-exports.resilientpropagation = require("./algorithms/resilientpropagation.js");
+exports.backprop = require("./system/backprop.js");
+exports.rprop = require("./system/rprop.js");
