@@ -17,7 +17,7 @@ _.extend(system.prototype, {
 	initialize: function() {},
 
 	train: function(inputs, ideals) {
-		var i, j, sum, error = 1.0;
+		var i, j, sum, previousError, error = 1.0;
 
 		// Start training.
 		console.log("Training started.");
@@ -39,25 +39,70 @@ _.extend(system.prototype, {
 
 				// Calculate gradients. (Batch mode)
 				this.calculateGradients(inputs[j], ideals[j]);
-
 				// Calculate error.
 				sum += this.calculateError(ideals[j]);
+
 			}
 
 			// Run a training iteration.
 			this.calculateDeltas();
-
 			// And finally, update the weights.
 			this.updateWeights();
 
 			// And calculate the batch error.
 			error = sum / inputs.length;
 
-			if(!(i % 100)) console.log("Error: [ %d ] %d", error, i);
+			// At every 100th iteration, ...
+			if(!(i % 1000)) {
+				// If the error has remained relatively constant for 1000 iterations,
+				// use a genetic algorithm to randomize some of the neuron's weights
+				// if it has the highest error.
+				if(Math.abs(error - previousError) < 1e-7) {
+					this.randomize(error);
+				}
+				// Set the previous error value.
+				previousError = error;
+				// Display the current error.
+				console.log("Error: [ %d ] %d", error, i);
+			}
 		}
+
 		// End training.
 		console.log("Training finished in %d iterations.", i);
 		console.log("Error is at: %d", error);
+
+		// for(i = 0; i < this.network.m.n.length; i++) {
+		// 	console.log(this.network.m.n[i][0].error);
+		// }
+	},
+
+	randomize: function(error) {
+		var i, j, least;
+		var n = this.network.matrix.neurons;
+
+		// Initialize least to be the first neuron in the network.
+		least = n[0][0];
+		// Cycle through all neurons, and find the least fit.
+		for(i = 0; i < n.length; i++) {
+			for(j = 0; j < n[i].length; j++) {
+
+				// console.log(i, j, n[i][j].error);
+
+				if(Math.abs(n[i][j].error) > Math.abs(least.error)) {
+					console.log("Found new least at: [%d, %d]", i, j, n[i][j].weights);
+					least = n[i][j];
+				}
+
+			}
+		}
+
+		console.log("Previous weights:", least.weights);
+
+		for(i = 0; i < least.weights.length; i++) {
+			least.weights[i] *= Math.random();
+		}
+
+		console.log("New weights:", least.weights);
 
 	},
 
@@ -149,8 +194,7 @@ _.extend(system.prototype, {
 				n[i][j].previousError = n[i][j].error;
 				n[i][j].error = error;
 				// Assign delta.
-				n[i][j].delta = ((n[i][j].output * (1 - n[i][j].output)) + 0.1) * error; // Sigmoid
-				// n[i][j].delta = ( 1 - (n[i][j].output * n[i][j].output) ) * error; // tanh
+				n[i][j].delta = n[i][j].derivative() * error;
 
 			}
 
