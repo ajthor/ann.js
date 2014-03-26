@@ -66,13 +66,18 @@ _.extend(matrix.prototype, {
 				clone.n[i][j].weights[k] = n.weights[k];
 			}
 		});
-		// Populate clone matrix values using last input.
-		clone.run(this.result[-1]);
 		return clone;
 	},
 
 	run: function(input) {
 		var i, j, result = [];
+		// Make sure there is some input array supplied.
+		if(!input) {
+			if(this.result) {
+				input = this.result[-1];
+			}
+			else throw new Error("Must pass an input to the run method.");
+		}
 		// Copy the input array to avoid changes to the original.
 		// Set it to be the 'input' layer.
 		result[-1] = input.slice();

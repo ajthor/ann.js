@@ -16,6 +16,9 @@ _.extend(system.prototype, {
 
 	initialize: function() {},
 
+	// Default training function.
+	// Set up for propagation algorithms (backprop & rprop).
+	// For other algorithms, train function must be overridden.
 	train: function(inputs, ideals) {
 		var i, j, sum, previousError, error = 1.0;
 
