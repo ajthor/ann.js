@@ -34,7 +34,7 @@ var backpropagation = module.exports = system.extend({
 			}
 
 		} catch(e) {
-			console.log("Error:", e.stack);
+			console.error("Error:", e.stack);
 		}
 	}
 

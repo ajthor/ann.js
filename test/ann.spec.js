@@ -14,7 +14,7 @@ describe("ann", function() {
 		// var system = require("../util/training/training.js").rprop;
 		var system = require("../util/training/training.js").anneal;
 
-		var a = new ann([2,3,1], {trainingSystem: system});
+		var a = new ann([2,2,1], {trainingSystem: system});
 
 		console.log(a.run([0,0]));
 		console.log(a.run([1,0]));

@@ -1,4 +1,8 @@
 var _ = require("lodash");
+
+var chalk = require("chalk");
+chalk.enabled = true;
+
 var system = require("../system.js");
 
 var rprop = module.exports = system.extend({
@@ -16,7 +20,8 @@ var rprop = module.exports = system.extend({
 		var P;
 
 		// Start training.
-		console.log("Simulated annealing training starting.");
+		console.log( chalk.red("Training started.") );
+		console.time("Training took");
 
 		// Cycle through inputs in order to train for
 		// all ideal values.
@@ -89,11 +94,15 @@ var rprop = module.exports = system.extend({
 			// Reduce T by some value.
 			T -= 0.00001;
 
-			// if(!(i%1000)) console.log("Error: [ %d ]", error);
+			if(!(i%1000)) console.log("Error: [ %d ]", error);
 		}
 
 		this.network.matrix = this.network.m = best;
-		console.log("End simulated annealing training.");
+
+		// End training.
+		console.log( chalk.yellow("Training finished in", i, "iterations.") );
+		console.log( chalk.yellow("Error is at:", error) );
+		console.timeEnd("Training took");
 
 	},
 

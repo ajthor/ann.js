@@ -15,7 +15,8 @@
   "license": "MIT",
   "dependencies": {
     "lodash": "~2.4.1",
-    "backbone-node": "git://github.com/ajthor/backbone-node.git"
+    "backbone-node": "git://github.com/ajthor/backbone-node.git",
+    "chalk": "~0.4.0"
   },
   "directories": {
     "test": "test"

@@ -1,4 +1,6 @@
 var _ = require("lodash");
+var chalk = require("chalk");
+
 var extend = require("backbone-node").extend;
 
 var system = module.exports = function(network, options) {
@@ -23,7 +25,8 @@ _.extend(system.prototype, {
 		var i, j, sum, previousError, error = 1.0;
 
 		// Start training.
-		console.log("Training started.");
+		console.log( chalk.yellow("Training started.") );
+		console.time("Training took");
 
 		// Cycle through inputs and ideal values to train network
 		// and avoid the problem of catastrophic forgetting.
@@ -38,7 +41,7 @@ _.extend(system.prototype, {
 
 			for(j = 0; j < inputs.length; j++) {
 				// Run the network to populate values.
-				this.network.parse(inputs[j]);
+				this.network.run(inputs[j]);
 
 				// Calculate gradients. (Batch mode)
 				this.calculateGradients(inputs[j], ideals[j]);
@@ -56,7 +59,7 @@ _.extend(system.prototype, {
 			error = sum / inputs.length;
 
 			// // At every 100th iteration, ...
-			// if(!(i % 1000)) {
+			if(!(i % 1000)) {
 			// 	// If the error has remained relatively constant for 1000 iterations,
 			// 	// use a genetic algorithm to randomize some of the neuron's weights
 			// 	// if it has the highest error.
@@ -66,13 +69,14 @@ _.extend(system.prototype, {
 			// 	// Set the previous error value.
 			// 	previousError = error;
 			// 	// Display the current error.
-			// 	console.log("Error: [ %d ] %d", error, i);
-			// }
+				console.log("Error: [ %d ] %d", error, i);
+			}
 		}
 
 		// End training.
-		console.log("Training finished in %d iterations.", i);
-		console.log("Error is at: %d", error);
+		console.log( chalk.yellow("Training finished in", i, "iterations.") );
+		console.log( chalk.yellow("Error is at: ", error) );
+		console.timeEnd("Training took");
 
 	},
 

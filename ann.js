@@ -36,7 +36,7 @@ _.extend(network.prototype, {
 			return this.m.run(input);
 
 		} catch(e) {
-			console.log("Error:", e.stack);
+			console.error("Error:", e.stack);
 		}
 	},
 
