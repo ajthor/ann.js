@@ -18,7 +18,7 @@ var network = module.exports = function(count, options) {
 	}
 	// Initialize network.
 	if(!count) count = [2, 1]; // Single layer with 2 neurons and 1 output neuron.
-	this.matrix = this.m = this.n = new matrix(count, options);
+	this.matrix = this.m = new matrix(count, options);
 
 	this.initialize(count, options);
 };
@@ -26,14 +26,14 @@ var network = module.exports = function(count, options) {
 _.extend(network.prototype, {
 	initialize: function() {},
 
-	parse: function(input) {
+	run: function(input) {
 		try {
 			// Force array type.
 			if(!Array.isArray(input)) input = [input];
 			// Clone input so as not to mess with original array.
 			var result = input.slice();
 			// Pass input into matrix.
-			return this.m.parse(input);
+			return this.m.run(input);
 
 		} catch(e) {
 			console.log("Error:", e.stack);

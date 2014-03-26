@@ -16,6 +16,9 @@ _.extend(system.prototype, {
 
 	initialize: function() {},
 
+	// Default training function.
+	// Set up for propagation algorithms (backprop & rprop).
+	// For other algorithms, train function must be overridden.
 	train: function(inputs, ideals) {
 		var i, j, sum, previousError, error = 1.0;
 
@@ -40,7 +43,7 @@ _.extend(system.prototype, {
 				// Calculate gradients. (Batch mode)
 				this.calculateGradients(inputs[j], ideals[j]);
 				// Calculate error.
-				sum += this.calculateError(ideals[j]);
+				sum += this.network.matrix.calculateError(ideals[j]);
 
 			}
 
@@ -52,57 +55,24 @@ _.extend(system.prototype, {
 			// And calculate the batch error.
 			error = sum / inputs.length;
 
-			// At every 100th iteration, ...
-			if(!(i % 1000)) {
-				// If the error has remained relatively constant for 1000 iterations,
-				// use a genetic algorithm to randomize some of the neuron's weights
-				// if it has the highest error.
-				if(Math.abs(error - previousError) < 1e-7) {
-					this.randomize(error);
-				}
-				// Set the previous error value.
-				previousError = error;
-				// Display the current error.
-				console.log("Error: [ %d ] %d", error, i);
-			}
+			// // At every 100th iteration, ...
+			// if(!(i % 1000)) {
+			// 	// If the error has remained relatively constant for 1000 iterations,
+			// 	// use a genetic algorithm to randomize some of the neuron's weights
+			// 	// if it has the highest error.
+			// 	if(Math.abs(error - previousError) < 1e-7) {
+			// 		this.randomize(error);
+			// 	}
+			// 	// Set the previous error value.
+			// 	previousError = error;
+			// 	// Display the current error.
+			// 	console.log("Error: [ %d ] %d", error, i);
+			// }
 		}
 
 		// End training.
 		console.log("Training finished in %d iterations.", i);
 		console.log("Error is at: %d", error);
-
-		// for(i = 0; i < this.network.m.n.length; i++) {
-		// 	console.log(this.network.m.n[i][0].error);
-		// }
-	},
-
-	randomize: function(error) {
-		var i, j, least;
-		var n = this.network.matrix.neurons;
-
-		// Initialize least to be the first neuron in the network.
-		least = n[0][0];
-		// Cycle through all neurons, and find the least fit.
-		for(i = 0; i < n.length; i++) {
-			for(j = 0; j < n[i].length; j++) {
-
-				// console.log(i, j, n[i][j].error);
-
-				if(Math.abs(n[i][j].error) > Math.abs(least.error)) {
-					console.log("Found new least at: [%d, %d]", i, j, n[i][j].weights);
-					least = n[i][j];
-				}
-
-			}
-		}
-
-		console.log("Previous weights:", least.weights);
-
-		for(i = 0; i < least.weights.length; i++) {
-			least.weights[i] *= Math.random();
-		}
-
-		console.log("New weights:", least.weights);
 
 	},
 
@@ -149,18 +119,6 @@ _.extend(system.prototype, {
 
 			}
 		}
-	},
-
-	calculateError: function(ideal) {
-		var n = this.network.matrix.neurons;
-		var error = 0.0;
-		var lastLayer = n[n.length-1];
-		// For every neuron in the last layer, ...
-		for(var i = 0; i < lastLayer.length; i++) {
-			// Calculate total error.
-			error += Math.pow((ideal[i] - lastLayer[i].output), 2);
-		}
-		return error;
 	},
 
 	calculateGradients: function(inputs, ideals) {
