@@ -10,25 +10,25 @@ var backpropagation = module.exports = system.extend({
 
 	calculateDeltas: function() {
 		try {
-			var i, j, k, n = this.network.matrix.neurons;
+			var i, j, k, weights = this.network.matrix.weights;
 			// Begin backpropagation.
 
-			for(i = 0; i < n.length; i++) {
-				for(j = 0; j < n[i].length; j++) {
+			for(i = 0; i < weights.length; i++) {
+				for(j = 0; j < weights[i].length; j++) {
 					// For each weight, ...
-					for(k = 0; k < n[i][j].weights.length; k++) {
+					for(k = 0; k < weights[i][j].length; k++) {
 						// Modify the weight by multiplying the weight by the
 						// learning rate and the derivative w/r to this weight.
-						n[i][j].deltas[k] = this.options.learningRate * n[i][j].gradients[k];
+						this.deltas[i][j][k] = this.options.learningRate * this.gradients[i][j][k];
 						// Apply momentum values.
-						n[i][j].deltas[k] += this.options.momentum * n[i][j].previousDeltas[k];
+						this.deltas[i][j][k] += this.options.momentum * this.previousDeltas[i][j][k];
 
 						// to use on-line training, uncomment these two lines:
-						// n[i][j].weights[k] += n[i][j].deltas[k];
+						// weights[i][j][k] += this.deltas[i][j][k];
 					}
 
 					// Set previous delta values.
-					// n[i][j].previousDeltas = n[i][j].deltas.slice();
+					// previousDeltas[i][j] = this.deltas[i][j].slice();
 
 				}
 			}

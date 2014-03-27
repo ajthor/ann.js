@@ -10,9 +10,11 @@ var matrix = module.exports = function matrix(configuration, options) {
 	});
 
 	// Create empty matrix array.
-	this.neurons = this.n = [];
+	this.neurons = [];
+	// Create empty array of weights.
+	this.weights = [];
 
-	this.initialize(configuration, options);
+	this.initialize(this.options.configuration, options);
 };
 
 _.extend(matrix.prototype, {
@@ -20,24 +22,31 @@ _.extend(matrix.prototype, {
 		var i, j;
 		// Set up matrix.
 		for(i = 0; i < configuration.length; i++) {
-			this.n[i] = [];
+			this.neurons[i] = [];
+			this.weights[i] = [];
 			// For this layer, create new neurons.
 			for(j = 0; j < configuration[i]; j++) {
-				this.n[i][j] = new neuron();
+				this.neurons[i][j] = new neuron();
+				// For each neuron created, create 
+				// an empty array of weights.
+				this.weights[i][j] = [];
 			}
 			// If 'hasBias' options is set, create a bias neuron.
 			if((this.options.hasBias) && (i < configuration.length-1)) {
-				this.n[i].push(new bias());
+				this.neurons[i].push(new bias());
+				// Create weights for bias, even though they won't be used.
+				this.weights[i].push(new Array());
 			}
 		}
 	},
 
 	calculateError: function(ideal) {
 		var error = 0.0;
+		var last = this.neurons[this.neurons.length-1];
 		// For every neuron in the last layer, ...
-		for(var i = 0; i < this.n[this.n.length-1].length; i++) {
+		for(var i = 0; i < last.length; i++) {
 			// Calculate total error.
-			error += Math.pow(( ideal[i] - this.n[this.n.length-1][i].output ), 2);
+			error += Math.pow(( ideal[i] - last[i].output ), 2);
 		}
 		return error;
 	},
@@ -47,9 +56,9 @@ _.extend(matrix.prototype, {
 			if(!cb) throw new Error("Must supply a callback to the 'forEach' function.");
 			handler || (handler = this);
 			var i, j;
-			for(i = 0; i < this.n.length; i++) {
-				for(j = 0; j < this.n[i].length; j++) {
-					cb.call(handler, this.n[i][j], i, j);
+			for(i = 0; i < this.neurons.length; i++) {
+				for(j = 0; j < this.neurons[i].length; j++) {
+					cb.call(handler, this.neurons[i][j], i, j);
 				}
 			}
 		} catch(e) {
@@ -62,32 +71,25 @@ _.extend(matrix.prototype, {
 		var clone = new this.constructor(this.options.configuration, this.options);
 		// Copy weights from this object to the clone.
 		this.forEach(function(n, i, j) {
-			for(var k = 0; k < n.weights.length; k++) {
-				clone.n[i][j].weights[k] = n.weights[k];
-			}
+			clone.weights[i][j] = this.weights[i][j].slice();
 		});
+
 		return clone;
 	},
 
 	run: function(input) {
 		var i, j, result = [];
-		// Make sure there is some input array supplied.
-		if(!input) {
-			if(this.result) {
-				input = this.result[-1];
-			}
-			else throw new Error("Must pass an input to the run method.");
-		}
 		// Copy the input array to avoid changes to the original.
 		// Set it to be the 'input' layer.
 		result[-1] = input.slice();
 
-		// For every 'layer', ...
-		for(i = 0; i < this.n.length; i++) {
-			// Assign a value to the result array.
+		// For every 'layer', assign an output value to the result array.
+		for(i = 0; i < this.neurons.length; i++) {
 			result[i] = [];
-			for(j = 0; j < this.n[i].length; j++) {
-				result[i][j] = this.n[i][j].run(result[i-1]);
+			for(j = 0; j < this.neurons[i].length; j++) {
+				// Pass in the output of the previous layer 
+				// and the weights of the current neuron.
+				result[i][j] = this.neurons[i][j].run(result[i-1], this.weights[i][j]);
 			}
 		}
 

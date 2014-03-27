@@ -14,7 +14,7 @@ var rprop = module.exports = system.extend({
 		best = matrix.clone();
 
 		// Set initial temperature.
-		var T = 10;
+		var T = this.options.initialTemperature || 10;
 		
 		// Probability function.
 		var P;
@@ -94,10 +94,10 @@ var rprop = module.exports = system.extend({
 			// Reduce T by some value.
 			T -= 0.00001;
 
-			if(!(i%1000)) console.log("Error: [ %d ]", error);
+			// if(!(i%1000)) console.log("Error: [ %d ]", error);
 		}
 
-		this.network.matrix = this.network.m = best;
+		this.network.matrix = best;
 
 		// End training.
 		console.log( chalk.yellow("Training finished in", i, "iterations.") );
@@ -109,16 +109,16 @@ var rprop = module.exports = system.extend({
 	randomize: function(matrix, T) {
 		matrix || (matrix = this.network.matrix.clone());
 		// Randomize the weights.
-		matrix.forEach(function(n) {
+		matrix.forEach(function(n, i, j) {
 			var k, delta;
 			// For every weight in each neuron, randomize the weights.
-			for(k = 0; k < n.weights.length; k++) {
+			for(k = 0; k < matrix.weights[i][j].length; k++) {
 				// Calculate new random value.
 				delta = 0.5 - Math.random();
 				delta /= 10;
 				delta *= T;
 				// Change the weight.
-				n.weights[k] += delta;
+				matrix.weights[i][j][k] += delta;
 			}
 		});
 		// Return new matrix.
