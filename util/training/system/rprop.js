@@ -13,60 +13,51 @@ var rprop = module.exports = system.extend({
 	calculateDeltas: function() {
 		try {
 
-			var i, j, k, n = this.network.matrix.neurons;
-			var change;
-
 			var positiveStep = 1.2;
 			var negativeStep = 0.5;
 
-			// Now that gradients are calculated, work forward to update weights.
-			// For each layer, and each neuron in each layer, ...
-			for(i = 0; i < n.length; i++) {
-				for(j = 0; j < n[i].length; j++) {
+			this.network.matrix.forEach(function(n, i, j) {
+				var change;
 
-					// For all weights in neuron, ...
-					for(k = 0; k < n[i][j].weights.length; k++) {
+				for(var k = 0; k < this.network.matrix.weights.length; k++) {
+					// Calculate the sign change.
+					change = this.sign(this.gradients[i][j][k] * this.previousGradients[i][j][k]);
 
-						// Calculate the sign change.
-						change = this.sign(n[i][j].gradients[k] * n[i][j].previousGradients[k]);
+					// IRPROP+
+					if(change > 0) {
 
-						// IRPROP+
-						if(change > 0) {
+						this.updates[i][j][k] = Math.min((this.previousUpdates[i][j][k] * positiveStep), 50);
+						this.deltas[i][j][k] = this.sign(this.gradients[i][j][k]) * this.updates[i][j][k];
+						this.previousGradients[i][j][k] = this.gradients[i][j][k];
 
-							n[i][j].updates[k] = Math.min((n[i][j].previousUpdates[k] * positiveStep), 50);
-							n[i][j].deltas[k] = this.sign(n[i][j].gradients[k]) * n[i][j].updates[k];
-							n[i][j].previousGradients[k] = n[i][j].gradients[k];
-
-						}
-						else if(change < 0) {
-
-							n[i][j].updates[k] = Math.max((n[i][j].previousUpdates[k] * negativeStep), 0.00001);
-							if(n[i][j].error > n[i][j].previousError) n[i][j].deltas[k] = -1 * n[i][j].previousDeltas[k];
-							n[i][j].previousGradients[k] = 0;
-
-						}
-						else {
-
-							n[i][j].deltas[k] = this.sign(n[i][j].gradients[k]) * n[i][j].updates[k];
-							n[i][j].previousGradients[k] = n[i][j].gradients[k];
-
-						}
-
-						// // IRPROP-
-						// if(change > 0) {
-						// 	n[i][j].updates[k] = Math.min((n[i][j].previousUpdates[k] * positiveStep), 50);
-						// }
-						// else if(change < 0) {
-						// 	n[i][j].updates[k] = Math.min((n[i][j].previousUpdates[k] * negativeStep), 1e-6);
-						// 	n[i][j].gradients[k] = 0;
-						// }
-
-						// n[i][j].deltas[k] = (this.sign(n[i][j].gradients[k]) * n[i][j].updates[k]);
 					}
-					
+					else if(change < 0) {
+
+						this.updates[i][j][k] = Math.max((this.previousUpdates[i][j][k] * negativeStep), 1e-6);
+						if(n.error > n.previousError) this.deltas[i][j][k] = -1 * this.previousDeltas[i][j][k];
+						this.previousGradients[i][j][k] = 0;
+
+					}
+					else {
+
+						this.deltas[i][j][k] = this.sign(this.gradients[i][j][k]) * this.updates[i][j][k];
+						this.previousGradients[i][j][k] = this.gradients[i][j][k];
+
+					}
+
+					// // IRPROP-
+					// if(change > 0) {
+					// 	this.updates[i][j][k] = Math.min((this.previousUpdates[i][j][k] * positiveStep), 50);
+					// }
+					// else if(change < 0) {
+					// 	this.updates[i][j][k] = Math.min((this.previousUpdates[i][j][k] * negativeStep), 1e-6);
+					// 	this.gradients[i][j][k] = 0;
+					// }
+
+					// this.deltas[i][j][k] = (this.sign(this.gradients[i][j][k]) * this.updates[i][j][k]);
 
 				}
-			}
+			}, this);
 
 
 		} catch(e) {
