@@ -3,8 +3,6 @@ var _ = require("lodash");
 var matrix = require("./util/static/matrix.js");
 var system = require("./util/training/training.js").system;
 
-// Network Object
-// --------------
 var network = module.exports = function(count, options) {
 	if(!(this instanceof network)) return new network(count, options);
 	// Set default options.
@@ -18,7 +16,7 @@ var network = module.exports = function(count, options) {
 	}
 	// Initialize network.
 	if(!count) count = [2, 1]; // Single layer with 2 neurons and 1 output neuron.
-	this.matrix = this.m = new matrix(count, options);
+	this.matrix = new matrix(count, options);
 
 	this.initialize(count, options);
 };
@@ -31,9 +29,8 @@ _.extend(network.prototype, {
 			// Force array type.
 			if(!Array.isArray(input)) input = [input];
 			// Clone input so as not to mess with original array.
-			var result = input.slice();
 			// Pass input into matrix.
-			return this.m.run(input);
+			return this.matrix.run(input.slice());
 
 		} catch(e) {
 			console.error("Error:", e.stack);
