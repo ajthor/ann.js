@@ -3,7 +3,7 @@ var _ = require("lodash");
 var chalk = require("chalk");
 chalk.enabled = true;
 
-var system = require("../system.js");
+var system = require("./system.js");
 
 var rprop = module.exports = system.extend({
 
