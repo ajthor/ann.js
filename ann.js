@@ -1,27 +1,42 @@
 var _ = require("lodash");
 
-var matrix = require("./util/static/matrix.js");
-var system = require("./util/training/training.js").system;
+var network = require("./lib/network/network.js");
+var training = require("./lib/training/training.js");
 
-var network = module.exports = function(count, options) {
-	if(!(this instanceof network)) return new network(count, options);
+var ann = module.exports = function(configuration, options) {
+	if(!(this instanceof ann)) return new ann(configuration, options);
 	// Set default options.
 	this.options = _.defaults((options || {}), {
+		// Set default network to be a feed-forward network.
+		network: network.perceptron,
 		// Set default training system to an annealing system.
-		trainingSystem: require("./util/training/training.js").anneal
+		trainingSystem: training.anneal
 	});
-	// If training system is uninstantiated, instantiate it.
-	if(!(this.options.trainingSystem instanceof system)) {
-		this.options.trainingSystem = new this.options.trainingSystem(this);
-	}
-	// Initialize network.
-	if(!count) count = [2, 1]; // Single layer with 2 neurons and 1 output neuron.
-	this.matrix = new matrix(count, options);
 
-	this.initialize(count, options);
+	// Single layer with 2 neurons and 1 output neuron.
+	if(!configuration) configuration = [2, 1];
+
+	// If network pattern is uninstantiated, instantiate it.
+	if(!(this.options.network instanceof network.pattern)) {
+		this.network = new this.options.network(configuration, options);
+	}
+	else {
+		this.network = this.options.network;
+	}
+
+	// If training system is uninstantiated, instantiate it.
+	if(!(this.options.trainingSystem instanceof training.system)) {
+		this.trainingSystem = new this.options.trainingSystem(this.network);
+	}
+	else {
+		this.trainingSystem = this.options.trainingSystem;
+	}
+	
+	// Initialize network.
+	this.initialize(configuration, options);
 };
 
-_.extend(network.prototype, {
+_.extend(ann.prototype, {
 	initialize: function() {},
 
 	run: function(input) {
@@ -29,8 +44,8 @@ _.extend(network.prototype, {
 			// Force array type.
 			if(!Array.isArray(input)) input = [input];
 			// Clone input so as not to mess with original array.
-			// Pass input into matrix.
-			return this.matrix.run(input.slice());
+			// Pass input into network.
+			return this.network.run(input.slice());
 
 		} catch(e) {
 			console.error("Error:", e.stack);
@@ -40,7 +55,7 @@ _.extend(network.prototype, {
 	train: function() {
 		if(!this.options.trainingSystem) throw new Error("Must first specify a training system.");
 		// Pass arguments along to the training system's train function.
-		return this.options.trainingSystem.train.apply(this.options.trainingSystem, arguments);
+		return this.trainingSystem.train.apply(this.trainingSystem, arguments);
 	}
 
 });
