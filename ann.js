@@ -7,8 +7,8 @@ var network = module.exports = function(count, options) {
 	if(!(this instanceof network)) return new network(count, options);
 	// Set default options.
 	this.options = _.defaults((options || {}), {
-		// Set default training system to a backpropagation system.
-		trainingSystem: require("./util/training/training.js").backprop
+		// Set default training system to an annealing system.
+		trainingSystem: require("./util/training/training.js").anneal
 	});
 	// If training system is uninstantiated, instantiate it.
 	if(!(this.options.trainingSystem instanceof system)) {
@@ -38,6 +38,7 @@ _.extend(network.prototype, {
 	},
 
 	train: function() {
+		if(!this.options.trainingSystem) throw new Error("Must first specify a training system.");
 		// Pass arguments along to the training system's train function.
 		return this.options.trainingSystem.train.apply(this.options.trainingSystem, arguments);
 	}

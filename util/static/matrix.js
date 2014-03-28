@@ -3,6 +3,8 @@ var _ = require("lodash");
 var bias = require("./bias.js");
 var neuron = require("./neuron.js");
 
+var extend = require("backbone-node").extend;
+
 var matrix = module.exports = function matrix(configuration, options) {
 	this.options = _.defaults((options || {}), {
 		configuration: configuration,
@@ -16,6 +18,8 @@ var matrix = module.exports = function matrix(configuration, options) {
 
 	this.initialize(this.options.configuration, options);
 };
+
+matrix.extend = extend;
 
 _.extend(matrix.prototype, {
 	initialize: function(configuration, options) {
@@ -38,6 +42,28 @@ _.extend(matrix.prototype, {
 				this.weights[i].push(new Array());
 			}
 		}
+	},
+
+	run: function(input) {
+		var i, j, result = [];
+		// Copy the input array to avoid changes to the original.
+		// Set it to be the 'input' layer.
+		result[-1] = input.slice();
+
+		// For every 'layer', assign an output value to the result array.
+		for(i = 0; i < this.neurons.length; i++) {
+			result[i] = [];
+			for(j = 0; j < this.neurons[i].length; j++) {
+				// Pass in the output of the previous layer 
+				// and the weights of the current neuron.
+				result[i][j] = this.neurons[i][j].run(result[i-1], this.weights[i][j]);
+			}
+		}
+
+		// Copy result array to local property.
+		this.result = result;
+
+		return result[i-1];
 	},
 
 	calculateError: function(ideal) {
@@ -75,27 +101,5 @@ _.extend(matrix.prototype, {
 		});
 
 		return clone;
-	},
-
-	run: function(input) {
-		var i, j, result = [];
-		// Copy the input array to avoid changes to the original.
-		// Set it to be the 'input' layer.
-		result[-1] = input.slice();
-
-		// For every 'layer', assign an output value to the result array.
-		for(i = 0; i < this.neurons.length; i++) {
-			result[i] = [];
-			for(j = 0; j < this.neurons[i].length; j++) {
-				// Pass in the output of the previous layer 
-				// and the weights of the current neuron.
-				result[i][j] = this.neurons[i][j].run(result[i-1], this.weights[i][j]);
-			}
-		}
-
-		// Copy result array to local property.
-		this.result = result;
-
-		return result[i-1];
 	}
 });
