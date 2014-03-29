@@ -28,10 +28,10 @@ describe("ann", function() {
 
 		// a.train([[0,0], [0,1], [1,0], [1,1]], [[0], [1], [1], [0]]);
 
-		console.log(a.run([0,0,0,0]));
-		console.log(a.run([1,0,1,0]));
-		console.log(a.run([0,1,0,1]));
-		console.log(a.run([1,1,1,1]));
+		// console.log(a.run([0,0,0,0]));
+		// console.log(a.run([1,0,1,0]));
+		// console.log(a.run([0,1,0,1]));
+		// console.log(a.run([1,1,1,1]));
 
 	});
 
