@@ -14,14 +14,16 @@
   "author": "Adam Thorpe",
   "license": "MIT",
   "dependencies": {
-    "lodash": "~2.4.1",
     "backbone-node": "git://github.com/ajthor/backbone-node.git",
-    "chalk": "~0.4.0"
+    "chalk": "~0.4.0",
+    "underscore": "^1.6.0"
   },
   "directories": {
     "test": "test"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "coffee-script": "^1.7.1"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/ajthor/ann.js.git"
