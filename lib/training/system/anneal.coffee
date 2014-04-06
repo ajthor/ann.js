@@ -20,6 +20,8 @@ class anneal extends system
 
 	train: (inputs, ideals) ->
 
+		i = 0
+		
 		neighbor = null
 		network = @network.clone()
 		best = @network.clone()
@@ -29,12 +31,11 @@ class anneal extends system
 		console.log chalk.red("Training started.")
 		console.time "Training took"
 
-		i = 0
 		error = 1.0
 		ebest = 1.0
 		# Train until error is less than threshold OR T reaches 0;
 		while error > @options.threshold and T > 0
-			i = i + 1
+			i += 1
 
 			E = error
 
@@ -75,6 +76,8 @@ class anneal extends system
 
 					ebest = error
 					best.copy neighbor
+
+					console.log "Error: #{ ebest }"
 			# If it's not necessarily better, check if it's possible
 			# to jump to this less-than-ideal solution.
 			else
@@ -86,7 +89,7 @@ class anneal extends system
 
 			T -= 1e-5
 
-			if (i % 1000) is 0 then console.log "Error is at: #{ ebest }"
+			# if (i % 1000) is 0 then console.log "Error is at: #{ ebest }"
 
 		# End training.
 		@network.copy best

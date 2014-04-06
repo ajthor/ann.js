@@ -4,6 +4,7 @@ _ = require("underscore")
 class system
 
 	constructor: (@network, options = {}) ->
+		if not this instanceof system then return new system(@network, options)
 		# Set options defaults.
 		@options = _.defaults(options, {
 			# Maximum number of training iterations.

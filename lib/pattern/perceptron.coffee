@@ -30,7 +30,7 @@ class perceptron extends network
 			
 			output[i] = for j in [0...@weights[i].length]
 
-				product = output[i-1].mult(@weights[i][j])
+				product = output[i-1].multiply(@weights[i][j])
 				sum = product.sum()
 				
 				@activation sum

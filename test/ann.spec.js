@@ -14,12 +14,12 @@ describe("ann", function() {
 
 	it("instantiation should work", function() {
 
-		var system = require("../lib/training/system/anneal");
+		// var system = require("../lib/training/system/backprop");
 
 
 		var a = new ann([2,2,2,1]);
 
-		var anneal = new system(a);
+		// var anneal = new system(a);
 
 		// var system = require("../lib/training/training.js").backprop;
 		// var system = require("../lib/training/training.js").rprop;
@@ -31,35 +31,21 @@ describe("ann", function() {
 		console.log(a.run([0,1]));
 		console.log(a.run([1,1]));
 
-		anneal.train(
-		[	[0,0], 
-			[0,1], 
-			[1,0], 
-			[1,1]], 
-		[	[0], 
-			[1], 
-			[1], 
-			[0]]);
+		// anneal.train(
+		// [	[0,0], 
+		// 	[0,1], 
+		// 	[1,0], 
+		// 	[1,1]], 
+		// [	[0], 
+		// 	[1], 
+		// 	[1], 
+		// 	[0]]);
 
 		
 		console.log(a.run([0,0]));
 		console.log(a.run([1,0]));
 		console.log(a.run([0,1]));
 		console.log(a.run([1,1]));
-		// // // a.train([[0,1]], [[1]]);
-		// // // a.train([[1,0]], [[1]]);
-
-		// // // console.log(a.input([0,0]));
-		// // // console.log(a.input([1,0]));
-		// // // console.log(a.input([0,1]));
-		// // // console.log(a.input([1,1]));
-		
-		// // // a.train([[0,0]], [[0]]);
-
-		// console.log(a.run([0,0]));
-		// console.log(a.run([1,0]));
-		// console.log(a.run([0,1]));
-		// console.log(a.run([1,1]));
 
 
 

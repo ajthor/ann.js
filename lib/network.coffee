@@ -2,9 +2,9 @@
 # ==========
 
 # Artificial Neural Network library written in JavaScript and 
-# CoffeeScript, implementing several neural network architectures, such 
-# as multi-layer perceptrons, boltzmann machines, and deep learning
-# networks.
+# CoffeeScript, implementing several neural network architectures,  
+# such as multi-layer perceptrons, boltzmann machines, and deep 
+# learning networks.
 
 # Require underscore.
 _ = require("underscore")
@@ -12,12 +12,11 @@ _ = require("underscore")
 # Array.prototype Extensions
 # ==========================
 # Some small changes to the array prototype have been made in order to
-# facilitate some mathematic functions.
+# facilitate some operations.
 Object.defineProperties Array.prototype,
 	# Transpose
 	# ---------
-	# `T` is a new property implemented in the Array object which will 
-	# return the transposed array.
+	# Get the transposed array.
 	T: 
 		get: ->
 			t = Object(this)
@@ -26,30 +25,31 @@ Object.defineProperties Array.prototype,
 	
 	# is2D
 	# ----
-	# `is2D` is a property which returns __true__ or __false__ if any of the
-	# elements in an array is an array.
+	# `is2D` is a property which returns __true__ or __false__ if any 
+	# of the elements in an array is an array.
 	is2D: 
 		get: ->
 			t = Object(this)
 			len = t.length >>> 0
-			for i in [0...len]
+			for i in [0...len] by 1
 				if t[i] instanceof Array
 					return true
 			return false
 
-# mult
-# ----
-# `mult` multiplies two arrays together. 
-Array::mult = (arr) ->
-	t = Object(this)
-	len = t.length >>> 0
-	result = []
-	for i in [0...len]
-		if t[i] instanceof Array
-			result[i] = t[i].mult(arr[i])
-		else
-			result[i] ?= t[i] * arr[i]
-	return result
+	# dimensions
+	# ----------
+	# Returns an empty array with this array's dimensions. Useful for 
+	# ensuring that the index you wish to set to will always 
+	# be available.
+	dimensions:
+		get: ->
+			t = Object(this)
+			len = t.length >>> 0
+			result = []
+			for i in [0...len] by 1
+				if t[i] instanceof Array
+					result[i] = t[i].dimensions
+			return result
 
 # sum
 # ---
@@ -58,7 +58,7 @@ Array::sum = ->
 	t = Object(this)
 	len = t.length >>> 0
 	sum = 0.0
-	for i in [0...len]
+	for i in [0...len] by 1
 		sum += t[i]
 	return sum
 
@@ -75,11 +75,98 @@ Array::map = (f, args...) ->
 
 	result = []
 	thisArg = if arguments.length >= 2 then arguments[1] else undefined
-	for i in [0...len]
+	for i in [0...len] by 1
 		if t[i] instanceof Array
 			result[i] = t[i].map f, args...
 		else
 			result[i] ?= f.call thisArg, t[i], i, t
+
+# Basic Array Math Functions
+# --------------------------
+# - `add` adds two arrays together.
+# - `subtract` subtracts an array from another.
+# - `multiply` multiplies two arrays together. 
+# - `divide` divides an array by another. 
+
+# Array math functions work on arrays fo the same dimensions (meaning
+# it will work with complex, nested arrays or multi-dimensional 
+# matrices, but will run on arrays of different dimensions. Cannot 
+# guarantee that the results will be as expected when using arrays of 
+# different dimensions.
+Array::add = (arr) ->
+	t = Object(this)
+	len = t.length >>> 0
+	result = []
+	for i in [0...len] by 1
+		if t[i] instanceof Array
+			result[i] = t[i].add(arr[i])
+		else 
+			result[i] ?= t[i] + arr[i]
+	return result
+
+Array::subtract = (arr) ->
+	t = Object(this)
+	len = t.length >>> 0
+	result = []
+	for i in [0...len] by 1
+		if t[i] instanceof Array
+			result[i] = t[i].subtract(arr[i])
+		else 
+			result[i] ?= t[i] - arr[i]
+	return result
+
+Array::multiply = (arr) ->
+	t = Object(this)
+	len = t.length >>> 0
+	result = []
+	for i in [0...len] by 1
+		if t[i] instanceof Array
+			result[i] = t[i].multiply(arr[i])
+		else
+			result[i] ?= t[i] * arr[i]
+	return result
+	
+Array::divide = (arr) ->
+	t = Object(this)
+	len = t.length >>> 0
+	result = []
+	for i in [0...len] by 1
+		if t[i] instanceof Array
+			result[i] = t[i].divide(arr[i])
+		else
+			result[i] ?= t[i] / arr[i]
+	return result
+
+# reset
+# -----
+# Resets all values of an array to the provided value or 0 
+# if undefined.
+Array::reset = (value) ->
+	t = Object(this)
+	len = t.length >>> 0
+
+	if value? then value = 0
+
+	result = Array.apply(null, new Array(len)).map(Number.prototype.valueOf, value)
+	for i in [0...len] by 1
+		if t[i] instanceof Array
+			result[i] = t[i].reset(value)
+
+	return result
+
+# clone
+# -----
+# Clones a multi-dimensional array.
+Array::clone = ->
+	t = Object(this)
+	len = t.length >>> 0
+	result = t[..]
+	for i in [0...len] by 1
+		if t[i] instanceof Array
+			result[i] = t[i].clone()
+
+	return result
+
 
 
 # Network Class
@@ -150,8 +237,8 @@ class network
 
 	# clone
 	# -----
-	# Clones the current network and copies the weights values from the 
-	# current network to the cloned network.
+	# Clones the current network and copies the weights values from  
+	# the current network to the cloned network.
 	clone: ->
 		clone = new this.constructor(this.config, this.options)
 		clone.copy this

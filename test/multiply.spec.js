@@ -9,18 +9,18 @@ describe("matrix multiplication function", function() {
 	});
 
 	it("should be defined", function() {
-		expect(Array.prototype.mult).toBeDefined();
+		expect(Array.prototype.multiply).toBeDefined();
 	});
 
 	it("should exist on new instances of Arrays", function() {
-		expect((new Array()).mult).toBeDefined();
-		expect([].mult).toBeDefined();
+		expect((new Array()).multiply).toBeDefined();
+		expect([].multiply).toBeDefined();
 	});
 
 	it("should output the product of 1d arrays", function() {
 		arr1 = [0,0,2,3]
 		arr2 = [0,1,1,4]
-		expect(arr1.mult(arr2)).toEqual( [0,0,2,12] );
+		expect(arr1.multiply(arr2)).toEqual( [0,0,2,12] );
 	});
 
 	it("should output the product of 2d arrays", function() {
@@ -32,7 +32,7 @@ describe("matrix multiplication function", function() {
 			[1,1], 
 			[2,2]
 		];
-		expect(arr1.mult(arr2)).toEqual( [
+		expect(arr1.multiply(arr2)).toEqual( [
 			[0,1], 
 			[4,6]
 		] );
