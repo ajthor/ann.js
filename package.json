@@ -16,6 +16,7 @@
   "dependencies": {
     "backbone-node": "git://github.com/ajthor/backbone-node.git",
     "chalk": "~0.4.0",
+    "matrix": "git://github.com/ajthor/matrix.git",
     "underscore": "^1.6.0"
   },
   "directories": {
