@@ -64,7 +64,7 @@ _.extend(network.prototype, {
 
 	copy: function(network) {
 		this.weights = [];
-		for(var i = 0; i < network.weights.length; i++) {
+		for(var i = network.weights.length; i--; ) {
 			this.weights[i] = network.weights[i].clone();
 		}
 	}

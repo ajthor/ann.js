@@ -22,9 +22,7 @@
   "directories": {
     "test": "test"
   },
-  "devDependencies": {
-    "coffee-script": "^1.7.1"
-  },
+  "devDependencies": {},
   "repository": {
     "type": "git",
     "url": "git://github.com/ajthor/ann.js.git"
