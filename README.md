@@ -3,7 +3,7 @@ ann.js
 
 Javascript Artificial Neural Network framework.
 
-Ann.js (_A_rtificial _N_eural _N_etwork) is a Node.js library for creating neural networks. Some architectures which I hope to implement are:
+Ann.js (Artificial Neural Network) is a Node.js library for creating neural networks. Some architectures which I hope to implement are:
 - Feed-forward networks
 - Cascade correlation networks
 - Restricted Boltzmann Machines (RBMs)
