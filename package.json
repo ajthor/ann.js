@@ -25,9 +25,8 @@
   "gypfile": true,
   "dependencies": {
     "async": "^0.9.0",
-    "backbone-node": "git://github.com/ajthor/backbone-node.git",
     "chalk": "~0.4.0",
-    "lodash": "~2.4.1",
+    "math": "git://github.com/ajthor/math",
     "underscore": "^1.6.0"
   },
   "directories": {

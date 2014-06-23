@@ -3,7 +3,7 @@
 		{
 			"target_name": "ann",
 			"sources": [
-				"ann.cpp"
+				"src/ann.cpp"
 			]
 		}
 	]
