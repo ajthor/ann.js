@@ -1,16 +1,14 @@
 #include <node.h>
 #include <v8.h>
 
+#include "network.h"
+#include "trainer.h"
+
 using namespace v8;
 
-Handle<Value> Method(const Arguments& args) {
-  HandleScope scope;
-  return scope.Close(String::New("world"));
+void Init(Handle<Object> exports) {
+	Network::Init(exports);
+	Trainer::Init(exports);
 }
 
-void init(Handle<Object> exports) {
-  exports->Set(String::NewSymbol("hello"),
-      FunctionTemplate::New(Method)->GetFunction());
-}
-
-NODE_MODULE(ann, init)
+NODE_MODULE(ann, Init)

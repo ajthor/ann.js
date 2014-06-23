@@ -1,31 +1,31 @@
 #define BUILDING_NODE_EXTENSION
 #include <node.h>
-#include "network.h"
+#include "training.h"
 
 using namespace v8;
 
-Persistent<Function> Network::constructor;
+Persistent<Function> Trainer::constructor;
 
-Network::Network() {
+Trainer::Trainer() {
 }
 
-Network::~Network() {
+Trainer::~Trainer() {
 }
 
-void Network::Init(Handle<Object> exports) {
+void Trainer::Init(Handle<Object> exports) {
 	Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
-	tpl->SetClassName(String::NewSymbol("Network"));
+	tpl->SetClassName(String::NewSymbol("Trainer"));
 	tpl->InstanceTemplate()->SetInternalFieldCount(1);
 
 	constructor = Persistent<Function>::New(tpl->GetFunction());
-	exports->Set(String::NewSymbol("Network"), constructor);
+	exports->Set(String::NewSymbol("Trainer"), constructor);
 }
 
-Handle<Value> Network::New(const Arguments& args) {
+Handle<Value> Trainer::New(const Arguments& args) {
 	HandleScope scope;
 
 	if (args.IsConstructCall()) {
-		Network* obj = new Network();
+		Trainer* obj = new Trainer();
 		obj->Wrap(args.This());
 
 		return args.This();
