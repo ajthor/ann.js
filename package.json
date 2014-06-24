@@ -39,6 +39,8 @@
     "chai": "^1.9.1",
     "gulp": "^3.8.1",
     "gulp-inkblot": "git://github.com/ajthor/gulp-inkblot",
+    "gulp-jshint": "^1.6.3",
+    "gulp-mocha": "^0.4.1",
     "gulp-shell": "^0.2.7",
     "gulp-util": "^2.2.17",
     "mocha": "^1.20.1"

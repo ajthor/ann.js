@@ -1,6 +1,5 @@
-#define BUILDING_NODE_EXTENSION
 #include <node.h>
-#include "training.h"
+#include "trainer.h"
 
 using namespace v8;
 
