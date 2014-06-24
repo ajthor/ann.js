@@ -17,7 +17,8 @@ var r = repl.start({
 
 // Expose the math and instance objects to the REPL.
 r.context.ann = ann;
-r.context.i = new ann();
+r.context.i = new ann.Network([2, 2, 1]);
+r.context.p = new ann.Perceptron([2, 2, 1]);
 
 // Print a message to the console on exit.
 r.on('exit', function () {
